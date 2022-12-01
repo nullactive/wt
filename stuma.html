@@ -1,0 +1,90 @@
+<HTML>
+ <HEAD><TITLE>STUDENT DATABASE </title>
+ <style type="text/css">
+ body { padding-left: 11em;
+40
+ font-family: "Times New Roman",Times, serif;}
+ h1 { font-family: Arial,
+ color: yellow;}
+ h2{color:green}
+ </style>
+ </HEAD>
+<BODY BGCOLOR='PINK'">
+<H1 align='center'"> Welcome to student Database</H1>
+<H2><i>Enter Student Register Number </i></H2>
+<CENTER>
+<FORM name = "students" method = "post" action="http://localhost:8080/Ex8/student">
+<TABLE>
+<tr>
+<td><B>REG No. </B> </td>
+<td><input type = "textbox" name="REGNO" size="25" value=""></td>
+</tr>
+</TABLE>
+<INPUT type = "submit" value="Submit">
+</FORM>
+<CENTER>
+</BODY>
+</HTML>
+Student.java
+import javax.servlet.http.*;
+import java.io.*;
+import javax.servlet.*;
+import java.sql.*;
+public class student extends HttpServlet
+{
+41
+Connection dbConn ;
+public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException,
+ServletException
+{
+try
+{
+Class.forName("oracle.jdbc.driver.OracleDriver") ;
+dbConn =
+DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.3:1521:orcl","ita1","ita1") ;
+}
+catch(ClassNotFoundException e)
+{
+System.out.println(e);
+}
+catch(Exception e)
+{
+System.out.println(e);
+}
+res.setContentType("text/html");
+PrintWriter out = res.getWriter();
+String mrollno = req.getParameter("REGNO") ;
+try
+{
+PreparedStatement ps = dbConn.prepareStatement("select * from student1 where REGNO = ?") ;
+ps.setString(1, mrollno) ;
+ResultSet rs = ps.executeQuery() ;
+out.println("<html>");
+out.println("<body>");
+out.println("<head>");
+out.println("<title>Hello World!</title>"); out.println("</head>");
+out.println("<body>");
+42
+out.println("<table width=50% border=1 bgcolor='#00FF00' align='center'>");
+while(rs.next())
+{
+out.println("<tr><td>Roll No. : </td>");
+out.println("<td>" + rs.getInt(1) + "</td></tr>");
+out.println("<tr><td>Name : </td>");
+out.println("<td>" + rs.getString(2) + "</td></tr>");
+out.println("<tr><td>Branch : </td>");
+out.println("<td>" + rs.getString(3) + "</td></tr>");
+out.println("<tr><td>12th Mark : </td>");
+out.println("<td>" + rs.getInt(4) + "</td></tr>");
+out.println("<tr><td>10th Mark : </td>");
+out.println("<td>" + rs.getInt(5) + "</td></tr>"); }
+out.println("</table>");
+out.println("</body>");
+out.println("</html>");
+}
+catch (Exception e)
+{
+System.out.println(e);
+}
+}
+}
