@@ -1,0 +1,193 @@
+package airinfo;
+import java.sql.*;
+public class TestDB implements MyInterface
+{
+public String getInfo(String src,String dest)
+{
+String str="";
+77
+try
+{
+Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+Connection con=DriverManager.getConnection("jdbc:odbc:Airways","","");
+Statement s=con.createStatement();
+if(src.equals("Mumbai"))
+{
+if(dest.equals("Pune"))
+s.executeQuery("SELECT * FROM Airways_table WHERE Start_from='Mumbai' AND
+Dest='Pune'");
+else if(dest.equals("Chennai"))
+s.executeQuery("SELECT * FROM Airways_table WHERE Start_from='Mumbai' AND
+Dest='Chennai'");
+}
+else if(src.equals("Pune"))
+{
+if(dest.equals("Mumbai"))
+s.executeQuery("SELECT * FROM Airways_table WHERE Start_from='Pune' AND
+Dest='Mumbai'");
+else if(dest.equals("Chennai"))
+s.executeQuery("SELECT * FROM Airways_table WHERE Start_from='Pune' AND
+Dest='Chennai'");
+}
+else if(src.equals("Chennai"))
+{
+if(dest.equals("Pune"))
+s.executeQuery("SELECT * FROM Airways_table WHERE Start_from='Chennai' AND
+Dest='Pune'");
+else if(dest.equals("Mumbai"))
+s.executeQuery("SELECT * FROM Airways_table WHERE Start_from='Chennai' AND
+Dest='Mumbai'");
+78
+}
+ResultSet rs=s.getResultSet();
+str+="<table border=1>";
+while(rs.next())
+{
+str+="<tr><b>";
+str+="<td>";
+str+=rs.getString("name");
+str+="</td>";
+str+="<td>";
+str+=rs.getString("Time");
+str+="</td>";
+str+="</tr></b>";
+}
+str+="</table>";
+}catch(ClassNotFoundException ex)
+{
+System.out.println(ex);
+}
+catch(SQLException ex)
+{
+System.out.println(ex);
+}
+return str;
+}
+}
+79
+Config.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration
+xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config">
+<service
+ name="AirLineReservation"
+ targetNamespace="http://tempuri.org/wsdl"
+ typeNamespace="http://tempuri.org/types"
+ packageName="airinfo">
+ <interface name="airinfo.MyInterface" />
+</service>
+</configuration>
+Jaxrpc-ri.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<webServices
+xmlns=http://java.sun.com/xml/ns/jax-rpc/ri/dd version="1.0"
+targetNamespaceBase=http://tempuri.org/wsdl typeNamespaceBase="http://tempuri.org/types"
+urlPatternBase="/AirTicket">
+<endpoint
+name="AirInformation"
+displayName="AirLine Reservation"
+description="This service displays status of Airways"
+interface="airinfo.MyInterface"
+model="/WEB-INF/model.xml.gz"
+implementation="airinfo.TestDB"/>
+<endpointMapping
+endpointName="AirInformation"
+urlPattern="/air" /> </webServices>
+80
+Web.xml:
+<web-app
+xmlns="http://java.sun.com/xml/ns/j2ee"
+xmlns:xsi=http://www.w3.org/2001/XMLSchema-instance
+xsi:schemaLocation=http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd version="2.4">
+<display-name>AirLine Reservation</display-name>
+<description>
+ This web page displays AirLine status
+</description>
+<session-config>
+<session-timeout>60</session-timeout>
+</session-config>
+</web-app>
+Config.xml:
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration
+xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config">
+<wsdl
+location="http://127.0.0.1:8080/AirTicket/air?WSDL"
+packageName="myairreservationclient" />
+</configuration>
+InputForm.html:
+<html>
+<head>
+<title>AIRLINE RESERVATION SYSTEM</title>
+</head>
+<body bgcolor="khaki">
+<center>
+81
+<h4>Travel Agent should fill up following information to get information about the
+Airline</h4>
+<form name="form1" method=GET action ="http://127.0.0.1:8080/servletsexamples/servlet/AirRClientProg">
+<table>
+<tr>
+<td><b>Source city: </b></td>
+<td><input type="text" name="Src_name" size="20" value=""></td>
+</tr>
+<tr>
+<td><b>Destination city: </b></td>
+<td><input type="text" name="Dest_name" size="20" value=""></td>
+</tr>
+<tr>
+<td><input type="submit" value="Submit"></td>
+</tr>
+</table>
+</form>
+</center>
+</body>
+</html>
+AirRclientProg.java
+package myairreservationclient;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.*;
+public class AirRClientProg extends HttpServlet
+{
+ public void doGet(HttpServletRequest req,HttpServletResponse res)
+82
+ throws IOException,ServletException
+ {
+ res.setContentType("text/html");
+ PrintWriter out=res.getWriter();
+ String s=req.getParameter("Src_name");
+ String d=req.getParameter("Dest_name");
+ AirLineReservation_Impl service = new AirLineReservation_Impl();
+ MyInterface stub = service.getMyInterfacePort();
+ String response = stub.getInfo(s,d);
+ out.println("<html>");
+ out.println("<body bgcolor='khaki' >");
+ out.println ( response );
+ out.println("</body>");
+ out.println("</html>");
+
+ }
+}
+Web.xml:
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/webapp_2_4.xsd" version="2.4">
+ <display-name>Welcome to Tomcat</display-name>
+ <description>
+ Welcome to Tomcat
+ </description>
+<!-- JSPC servlet mappings start -->
+ <servlet>
+ <servlet-name>org.apache.jsp.index_jsp</servlet-name>
+83
+ <servlet-class>org.apache.jsp.index_jsp</servlet-class>
+ </servlet>
+ <servlet-mapping>
+ <servlet-name>org.apache.jsp.index_jsp</servlet-name>
+ <url-pattern>/index.jsp</url-pattern>
+ </servlet-mapping>
+<!-- JSPC servlet mappings end -->
+</web-app>
