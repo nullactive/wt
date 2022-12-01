@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>
+Form Validation Program
+</title>
+<script type="text/javascript">
+function valid(v1,v2,v3,v4)
+{
+if(v1==""||v2==""||v3==""||v4=="")
+{
+alert("Fill all the fields");
+}
+16
+else
+alert("Registration Successful..Thank you!");
+}
+function pass(p1)
+{
+if(p1.length<8)
+alert("Password should be 8 charcters");
+}
+function mail()
+{
+var e1,e2,e3,e4;
+e1= new String(frm1.f3.value);
+e2=e1.indexOf("@");
+e3=e1.indexOf(".");
+e4=e1.lastIndexOf(".");
+if(e2==0 || e3==0)
+alert("Invalid email id!!!!\n@ and . cant be the first character.");
+if(e2==-1)
+alert("Invalid email id!!!!\n @ should be present.");
+if(e3==-1)
+alert("Invalid email id!!! \n . should be present.");
+if(e2==e1.length-1 || e3==e1.length-1)
+alert("Invalid email id!!!!\n@ and . cant be the last character.");
+if(e2==e3-1 || e3==e2-1)
+alert("Invalid email id!!!!\n@ and . cant be together.");
+17
+if(e4<e2)
+alert("Invalid email id!!!!\\nOne . should be present after @")
+}
+</script>
+<body>
+<h1><center>Form validation using Javascript</center></h1><table><form name="frm1">
+<tr><td>First Name<td><input type="text" name="f1"><br>
+<tr><td>Last Name<td><input type="text" name="f2"><br>
+<tr><td>Email Id<td><input type="text" name="f3" onchange="mail()"
+tabindex="1"></td><br>
+<tr><td>Password<td><input type="password" name="f4"
+onchange="pass(frm1.f4.value)"></td><br>
+<tr><td><input type="submit" value="submit"
+onclick="valid(frm1.f1.value,frm1.f2.value,frm1.f3.value,frm1.f4.value)"></td><br>
+</form>
+</table>
+</body>
+</html>
