@@ -1,0 +1,176 @@
+<html>
+<head><title>Online Examination</title>
+<script language="javascript">
+function validation(Form_obj)
+47
+{
+if(Form_obj.Seat_No.value.length==0)
+{
+alert("Please,fill up the Seat Number");
+Form_obj.Seat_no.focus();
+return false;
+}
+return true;
+}
+</script>
+</head>
+<body bgcolor=lightgreen>
+<h1 align="left">OnLine Examination</h1>
+<form action="exam.jsp" method="post" name="entry" onSubmit="return validation(this)">
+<div align="left">
+<input type="hidden"value="list"name="action">
+<table>
+<tr>
+<td><h3>Seat Number:</h3></td>
+<td><input type="text" name="Seat_No"size="50"></td>
+</tr>
+<tr>
+<td><h3>Name:</h3></td>
+<td><input type="text" name="Name"size="50"></td>
+</tr>
+<hr/>
+<tr>
+<td><b>Total Marks:10(Each question carries equal marks)</b></td>
+<td></td><td></td><td></td><td><b>Time:15 Min.</b></td>
+</tr>
+</table>
+48
+</div>
+<hr align="left"/>
+<div align="left"><b>1.Apache is an open source web server</b><br/>
+<input type="radio"name="group1"value="true">
+True
+<input type="radio"name="group1"value="false">
+false<br>
+<br/>
+<b>2.In modern PC there is no cache memory.</b><br/>
+<input type="radio"name="group2"value="true">
+True
+<input type="radio"name="group2"value="false">
+false<br>
+<br/>
+<b>3.Tim-Berner Lee is the originator of java.</b><br/>
+<input type="radio"name="group3"value="true">
+True
+<input type="radio"name="group3"value="false">
+false<br>
+<br/>
+<b>4.JPG is not video file extension.</b><br/>
+<input type="radio"name="group4"value="true">
+True
+<input type="radio"name="group4"value="false">
+false<br>
+<br/>
+<b>5.HTTpP is statefull protocol.</b><br/>
+<input type="radio"name="group5"value="true">
+True
+<input type="radio"name="group5"value="false">
+false<br>
+49
+</div>
+<hr align="left"/>
+<div align="left">
+<input type="submit"value="Submit">
+<input type="reset" value="clear">
+<br>
+<br>
+</div>
+</form>
+</html>
+exam.jsp
+<%@page language="java" import="java.sql.*"%>
+<%@page import="java.io.*"%>
+<%@page import="java.util.*"%>
+<%
+String SeatNum,Name;
+String ans1, ans2, ans3, ans4, ans5;
+int a1, a2, a3, a4, a5;
+a1 = a2 = a3 = a4 = a5 = 0;
+Connection connect = null;
+Statement stmt = null;
+ResultSet rs = null;
+Class.forName("oracle.jdbc.driver.OracleDriver");
+connect =
+DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.3:1521:orcl","ita1","ita1");
+if (request.getParameter("action") != null)
+{
+SeatNum = request.getParameter("Seat_No");
+Name = request.getParameter("Name");
+ans1 = request.getParameter("group1");
+50
+if (ans1.equals("true"))
+a1 = 2;
+else
+a1 = 0;
+ans2 = request.getParameter("group2");
+if (ans2.equals("false"))
+a2 = 2;
+else
+a2 = 0;
+ans3 = request.getParameter("group3");
+if (ans3.equals("false"))
+a3 = 2;
+else
+a3 = 0;
+ans4 = request.getParameter("group4");
+if (ans4.equals("true"))
+a4 = 2;
+else
+a4 = 0;
+ans5 = request.getParameter("group5");
+if (ans5.equals("false"))
+a5 = 2;
+else
+a5 = 0;
+int Total = a1 + a2 + a3 + a4 + a5;
+stmt = connect.createStatement();
+String query = "INSERT INTO Table1(Seat_No,Name,Marks)VALUES('" +SeatNum + "','"
++Name + "','" + Total + "')";
+int result = stmt.executeUpdate(query);
+stmt.close();
+stmt = connect.createStatement();
+51
+query = "SELECT * FROM Table1 WHERE Name='"+Name+"'";
+rs = stmt.executeQuery(query);
+%>
+<html><head><title>Student Mark List</title></head>
+<body bgcolor=khaki>
+<center>
+<h2>Students Marksheet</h2>
+<h3>Name of the college:PSNA College Of Engg & Technology</h3>
+<table border="1"cellspacing="0"cellpadding="0">
+<tr>
+<td><b>Seat_NO</b></td>
+<td><b>Name</b></td>
+<td><b>Marks</b></td>
+</tr>
+<%
+while (rs.next())
+{
+%>
+<tr>
+<td><%=rs.getInt(1)%></td>
+<td><%=rs.getString(2)%></td>
+<td><%=rs.getString(3)%></td>
+</tr>
+<%
+}
+rs.close();
+stmt.close();
+connect.close();
+%>
+</table>
+</center>
+52
+<br/><br/><br/>
+<table>
+<tr><td><b>Date:<%=new java.util.Date().toString()%></b></td></tr>
+<tr><td><b>Signature:X.Y.Z.</b></td></tr>
+</table>
+<div>
+<a href="exam.html">click here to go back</a>
+</div>
+</body>
+</html>
+<%} else {%>
+<%}%>
